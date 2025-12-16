@@ -1,0 +1,753 @@
+{% extends 'student/base.html' %}
+
+{% block title %}Reyting - IonEdu{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #10b981;
+        --primary-dark: #059669;
+        --gold: #f59e0b;
+        --silver: #6b7280;
+        --bronze: #d97706;
+    }
+
+    * {
+        font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .rating-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    /* Header */
+    .page-header {
+        text-align: center;
+        margin-bottom: 50px;
+        animation: fadeInDown 0.6s ease;
+    }
+
+    .page-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--gold), var(--bronze));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 12px;
+        letter-spacing: -2px;
+    }
+
+    .page-subtitle {
+        color: #6b7280;
+        font-size: 1.2rem;
+    }
+
+    /* Top 3 Podium */
+    .podium-section {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 60px;
+        animation: fadeInUp 0.6s ease 0.2s both;
+    }
+
+    .podium-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px 20px;
+        text-align: center;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .podium-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    }
+
+    .podium-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .podium-card.first {
+        width: 300px;
+        padding-top: 40px;
+    }
+
+    .podium-card.first::before {
+        background: linear-gradient(135deg, var(--gold), var(--bronze));
+        height: 8px;
+    }
+
+    .podium-card.second {
+        width: 260px;
+    }
+
+    .podium-card.second::before {
+        background: linear-gradient(135deg, #9ca3af, #6b7280);
+    }
+
+    .podium-card.third {
+        width: 260px;
+    }
+
+    .podium-card.third::before {
+        background: linear-gradient(135deg, #d97706, #b45309);
+    }
+
+    .rank-badge {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 900;
+        position: relative;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .podium-card.first .rank-badge {
+        background: linear-gradient(135deg, var(--gold), var(--bronze));
+        color: white;
+        width: 100px;
+        height: 100px;
+        font-size: 3rem;
+    }
+
+    .podium-card.second .rank-badge {
+        background: linear-gradient(135deg, #9ca3af, #6b7280);
+        color: white;
+    }
+
+    .podium-card.third .rank-badge {
+        background: linear-gradient(135deg, #d97706, #b45309);
+        color: white;
+    }
+
+    .crown {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2rem;
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateX(-50%) translateY(0); }
+        50% { transform: translateX(-50%) translateY(-10px); }
+    }
+
+    .student-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 0 auto 16px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        font-weight: 800;
+        border: 4px solid white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .podium-card.first .student-avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+        border-width: 5px;
+    }
+
+    .student-name {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 8px;
+    }
+
+    .student-stats {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 16px;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-value {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--gold);
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    /* Filter */
+    .filter-section {
+        background: white;
+        border-radius: 16px;
+        padding: 20px 24px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        animation: fadeIn 0.6s ease 0.4s both;
+    }
+
+    .filter-input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        transition: all 0.3s;
+        background: #f9fafb;
+    }
+
+    .filter-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .filter-select {
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        background: #f9fafb;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 40px;
+    }
+
+    /* Leaderboard Table */
+    .leaderboard-section {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        animation: fadeInUp 0.6s ease 0.6s both;
+    }
+
+    .table-header {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 20px 30px;
+        font-size: 1.3rem;
+        font-weight: 800;
+    }
+
+    .leaderboard-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .leaderboard-table thead {
+        background: #f9fafb;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .leaderboard-table th {
+        padding: 16px 20px;
+        text-align: left;
+        font-weight: 700;
+        color: #6b7280;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .leaderboard-table th:first-child {
+        width: 80px;
+        text-align: center;
+    }
+
+    .leaderboard-table tbody tr {
+        border-bottom: 1px solid #f3f4f6;
+        transition: all 0.3s;
+    }
+
+    .leaderboard-table tbody tr:hover {
+        background: #f9fafb;
+        transform: scale(1.01);
+    }
+
+    .leaderboard-table td {
+        padding: 20px;
+        color: #374151;
+    }
+
+    .rank-cell {
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 800;
+    }
+
+    .rank-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #f3f4f6;
+        color: #6b7280;
+        font-weight: 800;
+    }
+
+    .student-cell {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .table-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+
+    .student-info {
+        flex: 1;
+    }
+
+    .student-name-text {
+        font-weight: 700;
+        color: #111827;
+        font-size: 1rem;
+        margin-bottom: 4px;
+    }
+
+    .student-level {
+        font-size: 0.8rem;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .level-badge {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+
+    .score-cell {
+        font-weight: 800;
+        font-size: 1.3rem;
+        color: var(--gold);
+    }
+
+    .stars-cell {
+        font-size: 1.2rem;
+        color: var(--gold);
+    }
+
+    /* Current User Highlight */
+    .current-user {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05)) !important;
+        border-left: 4px solid var(--primary);
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+        .podium-section {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .podium-card {
+            width: 100% !important;
+            max-width: 350px;
+        }
+
+        .table-header {
+            padding: 16px 20px;
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2.5rem;
+        }
+
+        .filter-section {
+            flex-direction: column;
+        }
+
+        .filter-input,
+        .filter-select {
+            width: 100%;
+        }
+
+        .leaderboard-table {
+            font-size: 0.9rem;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 12px 10px;
+        }
+
+        .student-cell {
+            gap: 12px;
+        }
+
+        .table-avatar {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+
+        .student-name-text {
+            font-size: 0.9rem;
+        }
+
+        .score-cell {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .podium-card {
+            padding: 24px 16px;
+        }
+
+        .student-stats {
+            gap: 12px;
+        }
+
+        .leaderboard-section {
+            border-radius: 16px;
+        }
+
+        /* Stack table on very small screens */
+        .leaderboard-table thead {
+            display: none;
+        }
+
+        .leaderboard-table tbody tr {
+            display: block;
+            margin-bottom: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .leaderboard-table td {
+            display: block;
+            padding: 8px 0;
+            text-align: left !important;
+        }
+
+        .leaderboard-table td::before {
+            content: attr(data-label);
+            font-weight: 700;
+            color: #6b7280;
+            display: inline-block;
+            width: 80px;
+            font-size: 0.8rem;
+        }
+
+        .rank-cell::before {
+            content: 'REYTING: ';
+        }
+
+        .score-cell::before {
+            content: 'COINLAR: ';
+        }
+
+        .stars-cell::before {
+            content: 'YULDUZLAR: ';
+        }
+    }
+</style>
+
+<div class="rating-page">
+    <!-- Header -->
+    <div class="page-header">
+        <h1 class="page-title">🏆 Top Talabalar</h1>
+        <p class="page-subtitle">Eng faol va muvaffaqiyatli o'quvchilar reytingi</p>
+    </div>
+
+    <!-- Top 3 Podium -->
+    {% if top_students|length >= 3 %}
+    <div class="podium-section">
+        <!-- 2nd Place -->
+        <div class="podium-card second">
+            <div class="rank-badge">2</div>
+            <div class="student-avatar">
+                {{ top_students.1.first_name.0|upper }}{{ top_students.1.last_name.0|upper }}
+            </div>
+            <h3 class="student-name">{{ top_students.1.get_full_name }}</h3>
+            <div class="student-stats">
+                <div class="stat-item">
+                    <div class="stat-value">
+                        <i class="fas fa-coins"></i>
+                        {{ top_students.1.coins }}
+                    </div>
+                    <div class="stat-label">Coinlar</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">
+                        <i class="fas fa-star"></i>
+                        {{ top_students.1.stars }}
+                    </div>
+                    <div class="stat-label">Yulduzlar</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1st Place -->
+        <div class="podium-card first">
+            <div class="crown">👑</div>
+            <div class="rank-badge">1</div>
+            <div class="student-avatar">
+                {{ top_students.0.first_name.0|upper }}{{ top_students.0.last_name.0|upper }}
+            </div>
+            <h3 class="student-name">{{ top_students.0.get_full_name }}</h3>
+            <div class="student-stats">
+                <div class="stat-item">
+                    <div class="stat-value">
+                        <i class="fas fa-coins"></i>
+                        {{ top_students.0.coins }}
+                    </div>
+                    <div class="stat-label">Coinlar</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">
+                        <i class="fas fa-star"></i>
+                        {{ top_students.0.stars }}
+                    </div>
+                    <div class="stat-label">Yulduzlar</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3rd Place -->
+        <div class="podium-card third">
+            <div class="rank-badge">3</div>
+            <div class="student-avatar">
+                {{ top_students.2.first_name.0|upper }}{{ top_students.2.last_name.0|upper }}
+            </div>
+            <h3 class="student-name">{{ top_students.2.get_full_name }}</h3>
+            <div class="student-stats">
+                <div class="stat-item">
+                    <div class="stat-value">
+                        <i class="fas fa-coins"></i>
+                        {{ top_students.2.coins }}
+                    </div>
+                    <div class="stat-label">Coinlar</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">
+                        <i class="fas fa-star"></i>
+                        {{ top_students.2.stars }}
+                    </div>
+                    <div class="stat-label">Yulduzlar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Filter -->
+    <div class="filter-section">
+        <input
+            type="text"
+            id="searchInput"
+            class="filter-input"
+            placeholder="🔍 Talaba qidirish..."
+        >
+        <select id="levelFilter" class="filter-select">
+            <option value="">Barcha darajalar</option>
+            <option value="beginner">Beginner</option>
+            <option value="junior">Junior</option>
+            <option value="middle">Middle</option>
+            <option value="senior">Senior</option>
+        </select>
+    </div>
+
+    <!-- Leaderboard Table -->
+    <div class="leaderboard-section">
+        <div class="table-header">
+            <i class="fas fa-trophy"></i> Umumiy Reyting
+        </div>
+
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Reyting</th>
+                    <th>Talaba</th>
+                    <th>Coinlar</th>
+                    <th>Yulduzlar</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+                {% for student in top_students %}
+                <tr {% if student.id == request.user.id %}class="current-user"{% endif %} data-level="{{ student.level }}">
+                    <td class="rank-cell" data-label="REYTING">
+                        <span class="rank-number">{{ forloop.counter }}</span>
+                    </td>
+                    <td class="student-cell">
+                        <div class="table-avatar">
+                            {{ student.first_name.0|upper }}{{ student.last_name.0|upper }}
+                        </div>
+                        <div class="student-info">
+                            <div class="student-name-text">
+                                {{ student.get_full_name }}
+                                {% if student.id == request.user.id %}
+                                <i class="fas fa-user-check" style="color: var(--primary);"></i>
+                                {% endif %}
+                            </div>
+                            <div class="student-level">
+                                <span class="level-badge">{{ student.get_level_display }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="score-cell" data-label="COINLAR">
+                        <i class="fas fa-coins"></i> {{ student.coins }}
+                    </td>
+                    <td class="stars-cell" data-label="YULDUZLAR">
+                        <i class="fas fa-star"></i> {{ student.stars }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const levelFilter = document.getElementById('levelFilter');
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    function filterLeaderboard() {
+        const search = searchInput.value.toLowerCase();
+        const level = levelFilter.value.toLowerCase();
+        const rows = document.querySelectorAll('#leaderboardBody tr');
+
+        rows.forEach(row => {
+            const name = row.querySelector('.student-name-text').textContent.toLowerCase();
+            const studentLevel = row.getAttribute('data-level').toLowerCase();
+
+            let show = true;
+
+            if (search && !name.includes(search)) {
+                show = false;
+            }
+
+            if (level && studentLevel !== level) {
+                show = false;
+            }
+
+            row.style.display = show ? '' : 'none';
+        });
+
+        // Update rank numbers for visible rows
+        let visibleRank = 1;
+        rows.forEach(row => {
+            if (row.style.display !== 'none') {
+                row.querySelector('.rank-number').textContent = visibleRank;
+                visibleRank++;
+            }
+        });
+    }
+
+    searchInput.addEventListener('input', debounce(filterLeaderboard, 300));
+    levelFilter.addEventListener('change', filterLeaderboard);
+</script>
+
+{% endblock %}

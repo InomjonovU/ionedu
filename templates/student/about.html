@@ -1,0 +1,1122 @@
+{% extends 'student/base.html' %}
+
+{% block title %}Biz haqimizda - IonEdu{% endblock %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&family=Righteous&display=swap');
+
+    :root {
+        --spacing-xs: 16px;
+        --spacing-sm: 24px;
+        --spacing-md: 32px;
+        --spacing-lg: 48px;
+        --spacing-xl: 64px;
+        --spacing-2xl: 80px;
+
+        --radius-sm: 12px;
+        --radius-md: 16px;
+        --radius-lg: 20px;
+        --radius-xl: 24px;
+
+        --primary: #10b981;
+        --secondary: #3b82f6;
+        --accent: #f59e0b;
+        --purple: #8b5cf6;
+        --pink: #ec4899;
+        --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    * {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .about-page {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        min-height: 70vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 100px var(--spacing-sm) var(--spacing-xl);
+    }
+
+    .hero-bg-shapes {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+    }
+
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.1;
+        animation: float 20s infinite ease-in-out;
+    }
+
+    .shape1 {
+        width: 300px;
+        height: 300px;
+        background: white;
+        top: 10%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+
+    .shape2 {
+        width: 200px;
+        height: 200px;
+        background: white;
+        top: 60%;
+        right: 15%;
+        animation-delay: 5s;
+    }
+
+    .shape3 {
+        width: 150px;
+        height: 150px;
+        background: white;
+        bottom: 20%;
+        left: 20%;
+        animation-delay: 10s;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        25% { transform: translate(30px, -30px) rotate(90deg); }
+        50% { transform: translate(-20px, 20px) rotate(180deg); }
+        75% { transform: translate(40px, 10px) rotate(270deg); }
+    }
+
+    .hero-content {
+        text-align: center;
+        color: white;
+        z-index: 2;
+        max-width: 800px;
+        animation: fadeInUp 1s ease;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 10px 30px;
+        border-radius: 50px;
+        font-weight: 700;
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .hero-title {
+        font-family: 'Righteous', cursive;
+        font-size: 4.5rem;
+        font-weight: 900;
+        margin-bottom: 24px;
+        line-height: 1.1;
+        text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-subtitle {
+        font-size: 1.4rem;
+        opacity: 0.95;
+        line-height: 1.6;
+        font-weight: 300;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        padding: 0 var(--spacing-sm) var(--spacing-2xl);
+        max-width: 1200px;
+        margin: -80px auto 0;
+        position: relative;
+        z-index: 3;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-sm);
+    }
+
+    .stat-card {
+        background: white;
+        padding: var(--spacing-md) var(--spacing-sm);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: fadeInUp 0.8s ease both;
+    }
+
+    .stat-card:nth-child(1) { animation-delay: 0.1s; background: var(--gradient-1); color: white; }
+    .stat-card:nth-child(2) { animation-delay: 0.2s; background: var(--gradient-2); color: white; }
+    .stat-card:nth-child(3) { animation-delay: 0.3s; background: var(--gradient-3); color: white; }
+    .stat-card:nth-child(4) { animation-delay: 0.4s; background: var(--gradient-4); color: white; }
+
+    .stat-card:hover {
+        transform: translateY(-10px) scale(1.03);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-icon {
+        font-size: 3rem;
+        margin-bottom: var(--spacing-xs);
+        display: block;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 900;
+        margin-bottom: 8px;
+        font-family: 'Righteous', cursive;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        font-weight: 600;
+        opacity: 0.95;
+    }
+
+    /* Carousel Section */
+    .carousel-section {
+        padding: var(--spacing-2xl) var(--spacing-sm);
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: var(--spacing-lg);
+        animation: fadeInDown 0.8s ease;
+    }
+
+    .section-title {
+        font-family: 'Righteous', cursive;
+        font-size: 3rem;
+        background: var(--gradient-1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: #6b7280;
+    }
+
+    .carousel-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        position: relative;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .carousel-wrapper {
+        position: relative;
+        height: 500px;
+    }
+
+    .carousel-slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.8s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .carousel-slide.active {
+        opacity: 1;
+    }
+
+    .carousel-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .carousel-placeholder {
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 5rem;
+        color: white;
+    }
+
+    .carousel-controls {
+        position: absolute;
+        bottom: var(--spacing-sm);
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: var(--spacing-xs);
+        z-index: 10;
+    }
+
+    .carousel-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .carousel-dot.active {
+        width: 36px;
+        border-radius: var(--radius-sm);
+        background: white;
+    }
+
+    .carousel-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        font-size: 1.4rem;
+        color: #667eea;
+        cursor: pointer;
+        transition: all 0.3s;
+        z-index: 10;
+    }
+
+    .carousel-arrow:hover {
+        background: white;
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .carousel-arrow.prev { left: var(--spacing-sm); }
+    .carousel-arrow.next { right: var(--spacing-sm); }
+
+    /* Team Section */
+    .team-section {
+        padding: var(--spacing-2xl) var(--spacing-sm);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-lg);
+    }
+
+    .team-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-md) var(--spacing-sm);
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s;
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.8s ease both;
+    }
+
+    .team-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: var(--gradient-1);
+    }
+
+    .team-card:nth-child(2)::before { background: var(--gradient-2); }
+    .team-card:nth-child(3)::before { background: var(--gradient-3); }
+    .team-card:nth-child(4)::before { background: var(--gradient-4); }
+
+    .team-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .team-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin: 0 auto var(--spacing-sm);
+        background: var(--gradient-1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 900;
+        border: 5px solid white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .team-card:nth-child(2) .team-avatar { background: var(--gradient-2); }
+    .team-card:nth-child(3) .team-avatar { background: var(--gradient-3); }
+    .team-card:nth-child(4) .team-avatar { background: var(--gradient-4); }
+
+    .team-name {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 8px;
+    }
+
+    .team-role {
+        font-size: 0.95rem;
+        color: #8b5cf6;
+        font-weight: 600;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .team-bio {
+        color: #6b7280;
+        line-height: 1.6;
+        font-size: 0.9rem;
+    }
+
+    /* FAQ Section */
+    .faq-section {
+        padding: var(--spacing-2xl) var(--spacing-sm);
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    }
+
+    .faq-container {
+        max-width: 900px;
+        margin: var(--spacing-lg) auto 0;
+    }
+
+    .faq-item {
+        background: white;
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--spacing-sm);
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+        animation: fadeInUp 0.8s ease both;
+    }
+
+    .faq-item:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .faq-question {
+        padding: var(--spacing-sm) var(--spacing-md);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #111827;
+        user-select: none;
+    }
+
+    .faq-icon {
+        font-size: 1.4rem;
+        color: #8b5cf6;
+        transition: transform 0.3s;
+        flex-shrink: 0;
+        margin-left: var(--spacing-xs);
+    }
+
+    .faq-item.active .faq-icon {
+        transform: rotate(180deg);
+    }
+
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        padding: 0 var(--spacing-md);
+        color: #6b7280;
+        line-height: 1.8;
+    }
+
+    .faq-item.active .faq-answer {
+        max-height: 500px;
+        padding: 0 var(--spacing-md) var(--spacing-sm);
+    }
+
+    /* Support Section */
+    .support-section {
+        padding: var(--spacing-2xl) var(--spacing-sm);
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .support-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-xl) var(--spacing-lg);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.8s ease;
+    }
+
+    .support-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+    }
+
+    .support-icon {
+        font-size: 4rem;
+        margin-bottom: var(--spacing-sm);
+        animation: pulse 2s infinite;
+    }
+
+    .support-title {
+        font-family: 'Righteous', cursive;
+        font-size: 2.2rem;
+        color: #111827;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .support-text {
+        font-size: 1.05rem;
+        color: #6b7280;
+        margin-bottom: var(--spacing-md);
+        line-height: 1.8;
+    }
+
+    .card-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: var(--spacing-md);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--spacing-sm);
+        position: relative;
+        color: white;
+    }
+
+    .card-chip {
+        width: 50px;
+        height: 40px;
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        border-radius: 8px;
+        margin-bottom: var(--spacing-sm);
+        position: relative;
+    }
+
+    .card-chip::before,
+    .card-chip::after {
+        content: '';
+        position: absolute;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 2px;
+    }
+
+    .card-chip::before {
+        width: 30px;
+        height: 2px;
+        top: 12px;
+        left: 10px;
+    }
+
+    .card-chip::after {
+        width: 30px;
+        height: 2px;
+        bottom: 12px;
+        left: 10px;
+    }
+
+    .card-number {
+        font-family: 'Courier New', monospace;
+        font-size: 1.8rem;
+        letter-spacing: 3px;
+        font-weight: 700;
+        margin-bottom: var(--spacing-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-xs);
+        flex-wrap: wrap;
+    }
+
+    .card-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--spacing-xs);
+    }
+
+    .card-holder {
+        text-align: left;
+    }
+
+    .card-label {
+        font-size: 0.7rem;
+        opacity: 0.8;
+        margin-bottom: 4px;
+    }
+
+    .card-value {
+        font-size: 0.95rem;
+        font-weight: 700;
+    }
+
+    .copy-btn {
+        background: white;
+        color: #667eea;
+        border: none;
+        padding: var(--spacing-xs) var(--spacing-md);
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .copy-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .copy-btn.copied {
+        background: #10b981;
+        color: white;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .hero-title {
+            font-size: 3.5rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+        }
+
+        .team-grid {
+            gap: var(--spacing-sm);
+        }
+    }
+
+    @media (max-width: 768px) {
+        :root {
+            --spacing-sm: 16px;
+            --spacing-md: 24px;
+            --spacing-lg: 32px;
+            --spacing-xl: 48px;
+            --spacing-2xl: 60px;
+        }
+
+        .hero-section {
+            padding: 80px var(--spacing-sm) var(--spacing-xl);
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .stats-section {
+            margin-top: -60px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: var(--spacing-xs);
+        }
+
+        .stat-card {
+            padding: var(--spacing-sm);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+        }
+
+        .carousel-wrapper {
+            height: 350px;
+        }
+
+        .carousel-placeholder {
+            font-size: 4rem;
+        }
+
+        .carousel-arrow {
+            width: 48px;
+            height: 48px;
+            font-size: 1.2rem;
+        }
+
+        .carousel-arrow.prev { left: var(--spacing-xs); }
+        .carousel-arrow.next { right: var(--spacing-xs); }
+
+        .team-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .team-card {
+            padding: var(--spacing-sm);
+        }
+
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+        }
+
+        .faq-question {
+            padding: var(--spacing-sm);
+            font-size: 1rem;
+        }
+
+        .faq-answer {
+            padding: 0 var(--spacing-sm);
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 0 var(--spacing-sm) var(--spacing-sm);
+        }
+
+        .support-card {
+            padding: var(--spacing-md) var(--spacing-sm);
+            border-radius: var(--radius-lg);
+        }
+
+        .support-icon {
+            font-size: 3rem;
+        }
+
+        .support-title {
+            font-size: 1.8rem;
+        }
+
+        .support-text {
+            font-size: 1rem;
+        }
+
+        .card-container {
+            padding: var(--spacing-sm);
+        }
+
+        .card-number {
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+        }
+
+        .card-info {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .copy-btn {
+            width: 100%;
+            justify-content: center;
+            padding: var(--spacing-sm);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+        }
+
+        .carousel-wrapper {
+            height: 280px;
+        }
+
+        .carousel-placeholder {
+            font-size: 3rem;
+        }
+
+        .card-number {
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+    }
+</style>
+
+<div class="about-page">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-bg-shapes">
+            <div class="shape shape1"></div>
+            <div class="shape shape2"></div>
+            <div class="shape shape3"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">🚀 IonEdu Platform</div>
+            <h1 class="hero-title">Ta'limda Innovatsiya</h1>
+            <p class="hero-subtitle">
+                Zamonaviy texnologiyalar va professional o'qituvchilar bilan
+                kelajak kasbingizni bugun boshlang
+            </p>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-icon">👨‍🎓</span>
+                <div class="stat-number">5000+</div>
+                <div class="stat-label">Talabalar</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">👨‍🏫</span>
+                <div class="stat-number">150+</div>
+                <div class="stat-label">O'qituvchilar</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">📚</span>
+                <div class="stat-number">300+</div>
+                <div class="stat-label">Kurslar</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">⭐</span>
+                <div class="stat-number">4.9</div>
+                <div class="stat-label">Reyting</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carousel Section -->
+    <section class="carousel-section">
+        <div class="section-header">
+            <h2 class="section-title">Bizning Jamoamiz</h2>
+            <p class="section-subtitle">Professional va tajribali mutaxassislar</p>
+        </div>
+
+        <div class="carousel-container">
+            <div class="carousel-wrapper">
+                <div class="carousel-slide active">
+                    <div class="carousel-placeholder">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <div class="carousel-placeholder" style="background: var(--gradient-2);">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <div class="carousel-placeholder" style="background: var(--gradient-3);">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <div class="carousel-placeholder" style="background: var(--gradient-4);">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                </div>
+            </div>
+
+            <button class="carousel-arrow prev" onclick="changeSlide(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="carousel-arrow next" onclick="changeSlide(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+
+            <div class="carousel-controls">
+                <span class="carousel-dot active" onclick="goToSlide(0)"></span>
+                <span class="carousel-dot" onclick="goToSlide(1)"></span>
+                <span class="carousel-dot" onclick="goToSlide(2)"></span>
+                <span class="carousel-dot" onclick="goToSlide(3)"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team-section">
+        <div class="section-header">
+            <h2 class="section-title">Rahbariyat</h2>
+            <p class="section-subtitle">Bizning yuqori malakali jamoamiz</p>
+        </div>
+
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-avatar">AA</div>
+                <h3 class="team-name">Alisher Azimov</h3>
+                <p class="team-role">Asoschisi & CEO</p>
+                <p class="team-bio">
+                    10+ yillik tajribaga ega IT mutaxassisi. Ta'lim sohasida innovatsiyalar kiritishga ishtiyoqli.
+                </p>
+            </div>
+
+            <div class="team-card">
+                <div class="team-avatar">DN</div>
+                <h3 class="team-name">Dilshod Nabiyev</h3>
+                <p class="team-role">Ta'lim direktori</p>
+                <p class="team-bio">
+                    Pedagogika fanlari nomzodi. 15 yillik o'qituvchilik tajribasi. Zamonaviy metodikalar mutaxassisi.
+                </p>
+            </div>
+
+            <div class="team-card">
+                <div class="team-avatar">SK</div>
+                <h3 class="team-name">Sardor Karimov</h3>
+                <p class="team-role">Texnik direktor</p>
+                <p class="team-bio">
+                    Full-stack developer. Platformaning barcha texnik qismlarini boshqaradi va rivojlantiradi.
+                </p>
+            </div>
+
+            <div class="team-card">
+                <div class="team-avatar">MR</div>
+                <h3 class="team-name">Madina Rahimova</h3>
+                <p class="team-role">Marketing rahbari</p>
+                <p class="team-bio">
+                    Digital marketing bo'yicha 8 yillik tajriba. Brend strategiyasi va ijtimoiy tarmoqlar mutaxassisi.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="section-header">
+            <h2 class="section-title">Tez-tez So'raladigan Savollar</h2>
+            <p class="section-subtitle">Eng ko'p uchraydigan savollarga javoblar</p>
+        </div>
+
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>IonEdu platformasi qanday ishlaydi?</span>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    IonEdu - bu onlayn ta'lim platformasi bo'lib, siz bu yerda turli xil kurslarni o'rganishingiz, professional o'qituvchilar bilan bog'lanishingiz va o'z bilimlaringizni oshirishingiz mumkin. Platformada video darslar, testlar va amaliy topshiriqlar mavjud.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Kurslar pullikmi yoki bepul?</span>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    Platformada ham bepul, ham pullik kurslar mavjud. Bepul kurslar orqali asosiy bilimlarni o'rganishingiz mumkin. Premium kurslar esa chuqur bilim va sertifikat olish imkoniyatini beradi.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Sertifikat olay olamanmi?</span>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    Ha! Kursni muvaffaqiyatli yakunlaganingizdan so'ng, sizga rasmiy sertifikat beriladi. Bu sertifikatni CV ga qo'shishingiz yoki ijtimoiy tarmoqlarda baham ko'rishingiz mumkin.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>O'qituvchi bo'lishim mumkinmi?</span>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    Albatta! Agar siz biror sohada tajribaga egasiz va bilimlaringizni boshqalar bilan bo'lishmoqchi bo'lsangiz, platformamizga o'qituvchi sifatida qo'shilishingiz mumkin. Buning uchun ariza topshirishingiz kerak.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Mobil ilovangiz bormi?</span>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    Hozircha mobil ilovamiz beta versiyada. Lekin web saytimiz mobil qurilmalarda ham qulay ishlaydi va barcha funksiyalarga to'liq kirishingiz mumkin.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Support Section -->
+    <section class="support-section">
+        <div class="support-card">
+            <div class="support-icon">💝</div>
+            <h2 class="support-title">Loyihani Qo'llab-Quvvatlash</h2>
+            <p class="support-text">
+                IonEdu platformasining rivojlanishiga hissa qo'shmoqchi bo'lsangiz,
+                quyidagi karta raqamiga o'z yordamingizni yuborishingiz mumkin.
+                Har bir yordam platformani yanada yaxshilashga yordam beradi!
+            </p>
+
+            <div class="card-container">
+                <div class="card-chip"></div>
+                <div class="card-number" id="cardNumber">
+                    <span>8600</span>
+                    <span>1234</span>
+                    <span>5678</span>
+                    <span>9012</span>
+                </div>
+                <div class="card-info">
+                    <div class="card-holder">
+                        <div class="card-label">CARD HOLDER</div>
+                        <div class="card-value">IONEDU PLATFORM</div>
+                    </div>
+                    <div class="card-holder">
+                        <div class="card-label">EXPIRES</div>
+                        <div class="card-value">12/28</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="copy-btn" onclick="copyCardNumber()">
+                <i class="fas fa-copy"></i>
+                <span id="copyText">Karta raqamini nusxalash</span>
+            </button>
+        </div>
+    </section>
+</div>
+
+<script>
+    // Carousel
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.carousel-dot');
+
+    function showSlide(n) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+
+        if (n >= slides.length) currentSlide = 0;
+        if (n < 0) currentSlide = slides.length - 1;
+
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
+    }
+
+    function changeSlide(n) {
+        currentSlide += n;
+        showSlide(currentSlide);
+    }
+
+    function goToSlide(n) {
+        currentSlide = n;
+        showSlide(currentSlide);
+    }
+
+    // Auto carousel
+    setInterval(() => {
+        currentSlide++;
+        showSlide(currentSlide);
+    }, 5000);
+
+    // FAQ Toggle
+    function toggleFaq(element) {
+        const faqItem = element.parentElement;
+        const isActive = faqItem.classList.contains('active');
+
+        // Close all
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Open clicked
+        if (!isActive) {
+            faqItem.classList.add('active');
+        }
+    }
+
+    // Copy Card Number
+    function copyCardNumber() {
+        const cardNumber = '8600123456789012';
+        const btn = document.querySelector('.copy-btn');
+        const btnText = document.getElementById('copyText');
+
+        navigator.clipboard.writeText(cardNumber).then(() => {
+            btn.classList.add('copied');
+            btnText.innerHTML = '✓ Nusxalandi!';
+
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                btnText.innerHTML = 'Karta raqamini nusxalash';
+            }, 2000);
+        }).catch(err => {
+            console.error('Copy failed:', err);
+            alert('Karta raqami: ' + cardNumber);
+        });
+    }
+</script>
+
+{% endblock %}

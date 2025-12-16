@@ -1,0 +1,191 @@
+{% extends 'student/base.html' %}
+
+{% block title %}O'qituvchilar - IonEdu{% endblock %}
+
+{% block content %}
+<style>
+    .page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 24px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-title {
+        font-size: 40px;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 16px;
+        color: #666;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
+    }
+
+    .teacher-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        transition: all 0.2s;
+    }
+
+    .teacher-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    .teacher-header {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        height: 80px;
+        position: relative;
+    }
+
+    .teacher-avatar-wrap {
+        position: absolute;
+        bottom: -32px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .teacher-avatar {
+        width: 64px;
+        height: 64px;
+        background: white;
+        border-radius: 50%;
+        border: 3px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .teacher-body {
+        padding: 40px 20px 20px;
+        text-align: center;
+    }
+
+    .teacher-name {
+        font-size: 18px;
+        font-weight: 800;
+        color: #1a1a1a;
+        margin-bottom: 4px;
+    }
+
+    .teacher-spec {
+        font-size: 13px;
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .teacher-stats {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 16px 0;
+        border-top: 1px solid #f0f0f0;
+        border-bottom: 1px solid #f0f0f0;
+        margin-bottom: 16px;
+    }
+
+    .stat {
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 18px;
+        font-weight: 800;
+        color: #1a1a1a;
+    }
+
+    .stat-label {
+        font-size: 11px;
+        color: #999;
+        text-transform: uppercase;
+    }
+
+    .btn-profile {
+        padding: 10px 24px;
+        background: var(--primary);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        display: inline-block;
+    }
+
+    @media (max-width: 768px) {
+        .grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page">
+    <div class="page-header">
+        <h1 class="page-title">Professional O'qituvchilar</h1>
+        <p class="page-subtitle">Eng yaxshi ustozlardan o'rganing</p>
+    </div>
+
+    <div class="grid">
+        {% for teacher in teachers %}
+        <div class="teacher-card">
+            <div class="teacher-header">
+                <div class="teacher-avatar-wrap">
+                    <div class="teacher-avatar">
+                        {{ teacher.first_name.0|upper }}{{ teacher.last_name.0|upper|default:'' }}
+                    </div>
+                </div>
+            </div>
+            <div class="teacher-body">
+                <h3 class="teacher-name">{{ teacher.get_full_name }}</h3>
+                <div class="teacher-spec">{{ teacher.specialization|default:"O'qituvchi" }}</div>
+                <div class="teacher-stats">
+                    <div class="stat">
+                        <div class="stat-value">{{ teacher.rating|floatformat:1|default:'-' }}</div>
+                        <div class="stat-label">Reyting</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">{{ teacher.courses.count|default:0 }}</div>
+                        <div class="stat-label">Kurslar</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">{{ teacher.experience_years|default:0 }}</div>
+                        <div class="stat-label">Tajriba</div>
+                    </div>
+                </div>
+                <a href="{% url 'student:teacher_detail' teacher.id %}" class="btn-profile">
+                    Profil
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1/-1; text-align: center; padding: 80px 20px; color: #999;">
+            <i class="fas fa-user-slash" style="font-size: 64px; margin-bottom: 16px;"></i>
+            <h3>O'qituvchilar topilmadi</h3>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

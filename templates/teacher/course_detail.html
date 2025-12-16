@@ -1,0 +1,715 @@
+{% extends 'teacher/base.html' %}
+
+{% block page_title %}{{ course.title }}{% endblock %}
+{% block page_subtitle %}Kurs tafsilotlari va boshqaruv{% endblock %}
+
+{% block content %}
+<style>
+    .course-header {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .course-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, #26CCC2 0%, #22b3aa 100%);
+    }
+
+    .course-header-content {
+        display: flex;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .course-thumbnail {
+        width: 120px;
+        height: 120px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #26CCC2 0%, #22b3aa 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3rem;
+        font-weight: 700;
+        flex-shrink: 0;
+        box-shadow: 0 8px 16px rgba(38, 204, 194, 0.3);
+    }
+
+    .course-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 16px;
+    }
+
+    .course-info {
+        flex: 1;
+    }
+
+    .course-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+    }
+
+    .course-meta {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .meta-item svg {
+        width: 18px;
+        height: 18px;
+        color: #26CCC2;
+    }
+
+    .course-description {
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .course-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.625rem 1.25rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #26CCC2 0%, #22b3aa 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px rgba(38, 204, 194, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(38, 204, 194, 0.4);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #64748b;
+        border: 2px solid #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+        border-color: #26CCC2;
+        color: #26CCC2;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 1rem;
+        border-radius: 12px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .stat-icon svg {
+        width: 24px;
+        height: 24px;
+        color: #26CCC2;
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .content-tabs {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .tabs-nav {
+        display: flex;
+        border-bottom: 2px solid #e2e8f0;
+        overflow-x: auto;
+    }
+
+    .tab-btn {
+        padding: 1rem 1.5rem;
+        background: none;
+        border: none;
+        color: #64748b;
+        font-weight: 600;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+        color: #26CCC2;
+    }
+
+    .tab-btn.active {
+        color: #26CCC2;
+    }
+
+    .tab-btn.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #26CCC2 0%, #22b3aa 100%);
+    }
+
+    .tab-content {
+        padding: 2rem;
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .lesson-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .lesson-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .lesson-item:hover {
+        border-color: #26CCC2;
+        background: #f8fafc;
+    }
+
+    .lesson-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #26CCC2 0%, #22b3aa 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .lesson-info {
+        flex: 1;
+    }
+
+    .lesson-title {
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+
+    .lesson-meta {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+
+    .lesson-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .icon-btn {
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 8px;
+        background: #f1f5f9;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+        background: #26CCC2;
+    }
+
+    .icon-btn:hover svg {
+        color: white;
+    }
+
+    .icon-btn svg {
+        width: 16px;
+        height: 16px;
+        color: #64748b;
+        transition: color 0.2s;
+    }
+
+    .add-lesson-btn {
+        width: 100%;
+        padding: 1rem;
+        border: 2px dashed #cbd5e1;
+        background: #f8fafc;
+        border-radius: 12px;
+        color: #64748b;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .add-lesson-btn:hover {
+        border-color: #26CCC2;
+        color: #26CCC2;
+        background: white;
+    }
+
+    .add-lesson-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .student-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .student-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+    }
+
+    .student-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #26CCC2 0%, #22b3aa 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .student-info {
+        flex: 1;
+    }
+
+    .student-name {
+        font-weight: 600;
+        color: #1a202c;
+    }
+
+    .student-email {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #64748b;
+    }
+
+    .empty-state svg {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+    }
+
+    @media (max-width: 768px) {
+        .course-header-content {
+            flex-direction: column;
+        }
+
+        .course-thumbnail {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+
+        .course-title {
+            font-size: 1.5rem;
+        }
+
+        .tab-content {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<div class="course-header">
+    <div class="course-header-content">
+        <div class="course-thumbnail">
+            {% if course.background_image %}
+                <img src="{{ course.background_image.url }}" alt="{{ course.title }}">
+            {% else %}
+                {{ course.title.0 }}
+            {% endif %}
+        </div>
+
+        <div class="course-info">
+            <h1 class="course-title">{{ course.title }}</h1>
+
+            <div class="course-meta">
+                <div class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 14l9-5-9-5-9 5 9 5z"/>
+                        <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                    </svg>
+                    <span>{{ course.get_type_display }}</span>
+                </div>
+
+                {% if course.category %}
+                <div class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    <span>{{ course.category.name }}</span>
+                </div>
+                {% endif %}
+
+                {% if course.subject %}
+                <div class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span>{{ course.subject }}</span>
+                </div>
+                {% endif %}
+
+                <div class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span>{{ course.created_at|date:"d.m.Y" }}</span>
+                </div>
+            </div>
+
+            {% if course.description %}
+            <p class="course-description">{{ course.description }}</p>
+            {% endif %}
+
+            <div class="course-actions">
+                <a href="{% url 'teacher:edit_course' course.id %}" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    Tahrirlash
+                </a>
+                <button class="btn btn-secondary" onclick="window.history.back()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Orqaga
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+        </div>
+        <div class="stat-value">{{ course.students.count }}</div>
+        <div class="stat-label">O'quvchilar</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+        </div>
+        <div class="stat-value">{{ course.lessons.count }}</div>
+        <div class="stat-label">Darslar</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+            </svg>
+        </div>
+        <div class="stat-value">{{ course.comments.count }}</div>
+        <div class="stat-label">Izohlar</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+            </svg>
+        </div>
+        <div class="stat-value">{{ course.tests.count }}</div>
+        <div class="stat-label">Testlar</div>
+    </div>
+</div>
+
+<!-- Content Tabs -->
+<div class="content-tabs">
+    <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="lessons">Darslar</button>
+        <button class="tab-btn" data-tab="students">O'quvchilar</button>
+        <button class="tab-btn" data-tab="tests">Testlar</button>
+        <button class="tab-btn" data-tab="comments">Izohlar</button>
+    </div>
+
+    <!-- Lessons Tab -->
+    <div class="tab-content active" id="lessons">
+        <div class="lesson-list">
+            {% for lesson in course.lessons.all %}
+            <div class="lesson-item">
+                <div class="lesson-number">{{ lesson.order }}</div>
+                <div class="lesson-info">
+                    <div class="lesson-title"><a href="{% url 'teacher:lesson_detail' lesson.id %}" style="text-decoration: none; color: #1a202c;">{{ lesson.title }}</a></div>
+                    <div class="lesson-meta">
+                        {% if lesson.video_url %}📹 Video{% endif %}
+                        {% if lesson.presentation_file %}📄 Taqdimot{% endif %}
+                    </div>
+                </div>
+                <div class="lesson-actions">
+                    <button class="icon-btn" onclick="window.location.href='{% url 'teacher:edit_lesson' lesson.id %}'" title="Tahrirlash">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </button>
+                    <button class="icon-btn" onclick="deleteLesson({{ lesson.id }}, '{{ lesson.title }}')" title="O'chirish">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <p>Hozircha darslar yo'q</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button class="add-lesson-btn" onclick="window.location.href='{% url 'teacher:add_lesson' course.id %}'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 4v16m8-8H4"/>
+            </svg>
+            Yangi Dars Qo'shish
+        </button>
+    </div>
+
+    <!-- Students Tab -->
+    <div class="tab-content" id="students">
+        <div class="student-list">
+            {% for enrollment in course.students.all %}
+            <div class="student-item">
+                <div class="student-avatar">
+                    {{ enrollment.user.first_name.0|default:enrollment.user.username.0 }}{{ enrollment.user.last_name.0|default:"" }}
+                </div>
+                <div class="student-info">
+                    <div class="student-name">{{ enrollment.user.get_full_name|default:enrollment.user.username }}</div>
+                    <div class="student-email">{{ enrollment.user.email }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <p>Hozircha o'quvchilar yo'q</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Tests Tab -->
+    <div class="tab-content" id="tests">
+        <div class="lesson-list">
+            {% for test in course.tests.all %}
+            <div class="lesson-item">
+                <div class="lesson-info">
+                    <div class="lesson-title">{{ test.title }}</div>
+                    <div class="lesson-meta">
+                        {% if test.time_limit_minutes %}⏱️ {{ test.time_limit_minutes }} daqiqa{% endif %}
+                        🎯 {{ test.passing_score }}% o'tish bali
+                    </div>
+                </div>
+                <div class="lesson-actions">
+                    <button class="icon-btn" onclick="window.location.href='{% url 'teacher:edit_test' test.id%}'" title="Tahrirlash">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+                <p>Hozircha testlar yo'q</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button class="add-lesson-btn" onclick="window.location.href='{% url 'teacher:add_test' course.id %}'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 4v16m8-8H4"/>
+            </svg>
+            Yangi Test Qo'shish
+        </button>
+    </div>
+
+    <!-- Comments Tab -->
+    <div class="tab-content" id="comments">
+        <div class="student-list">
+            {% for comment in course.comments.all %}
+            <div class="student-item">
+                <div class="student-avatar">
+                    {{ comment.user.first_name.0|default:comment.user.username.0 }}{{ comment.user.last_name.0|default:"" }}
+                </div>
+                <div class="student-info">
+                    <div class="student-name">{{ comment.user.get_full_name|default:comment.user.username }}</div>
+                    <div class="student-email">{{ comment.content }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                </svg>
+                <p>Hozircha izohlar yo'q</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tab switching
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetTab = button.dataset.tab;
+
+            // Update buttons
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            // Update contents
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(targetTab).classList.add('active');
+        });
+    });
+
+    // Delete lesson
+    function deleteLesson(lessonId, lessonTitle) {
+        if (confirm(`"${lessonTitle}" darsini o'chirishni xohlaysizmi?`)) {
+            fetch(`/lessons/${lessonId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Xatolik yuz berdi');
+                }
+            });
+        }
+    }
+</script>
+
+{% endblock %}

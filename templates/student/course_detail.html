@@ -1,0 +1,543 @@
+{% extends 'student/base.html' %}
+
+{% block title %}{{ course.title }} - IonEdu{% endblock %}
+
+{% block content %}
+<style>
+    .page {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 24px;
+    }
+
+    .breadcrumb {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 32px;
+    }
+
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    /* Hero */
+    .hero {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        border-radius: 20px;
+        padding: 48px 40px;
+        color: white;
+        margin-bottom: 32px;
+    }
+
+    .hero-title {
+        font-size: 40px;
+        font-weight: 900;
+        margin-bottom: 20px;
+        line-height: 1.2;
+    }
+
+    .hero-meta {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+        font-size: 14px;
+    }
+
+    .meta-item {
+        background: rgba(255,255,255,0.2);
+        padding: 6px 14px;
+        border-radius: 20px;
+    }
+
+    .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+
+    .stat {
+        background: rgba(255,255,255,0.15);
+        padding: 16px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .stat-num {
+        font-size: 28px;
+        font-weight: 900;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        opacity: 0.9;
+    }
+
+    /* Content */
+    .content {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .card-title {
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        color: #1a1a1a;
+    }
+
+    /* Image */
+    .course-image {
+        width: 100%;
+        height: 300px;
+        border-radius: 16px;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    }
+
+    .course-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Enroll */
+    .enroll-card {
+        border: 2px solid var(--primary);
+    }
+
+    .price-box {
+        text-align: center;
+        padding: 20px 0;
+        border-bottom: 1px solid #f0f0f0;
+        margin-bottom: 20px;
+    }
+
+    .price {
+        font-size: 36px;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 4px;
+    }
+
+    .price-label {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 14px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        margin-bottom: 12px;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+
+    .btn-disabled {
+        background: #e0e0e0;
+        color: #999;
+        cursor: not-allowed;
+    }
+
+    .btn-secondary {
+        background: #3b82f6;
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        font-size: 14px;
+    }
+
+    .feature {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #666;
+    }
+
+    .feature i {
+        color: var(--primary);
+    }
+
+    /* Description */
+    .desc {
+        font-size: 15px;
+        line-height: 1.7;
+        color: #666;
+    }
+
+    /* Learn */
+    .learn-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .learn-item {
+        display: flex;
+        gap: 10px;
+        padding: 12px;
+        background: #fafafa;
+        border-radius: 10px;
+        font-size: 14px;
+    }
+
+    .learn-item i {
+        color: var(--primary);
+        margin-top: 2px;
+    }
+
+    /* Teacher */
+    .teacher {
+        display: flex;
+        gap: 16px;
+        padding: 20px;
+        background: #fafafa;
+        border-radius: 12px;
+    }
+
+    .teacher-avatar {
+        width: 64px;
+        height: 64px;
+        background: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 900;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+
+    .teacher-name {
+        font-weight: 700;
+        margin-bottom: 4px;
+        font-size: 16px;
+    }
+
+    .teacher-meta {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 12px;
+    }
+
+    .teacher-bio {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 12px;
+    }
+
+    .btn-teacher {
+        display: inline-block;
+        padding: 8px 20px;
+        background: white;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+    }
+
+    /* Lessons */
+    .lessons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .lesson {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px;
+        background: #fafafa;
+        border-radius: 10px;
+        transition: all 0.2s;
+    }
+
+    .lesson:hover {
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .lesson-main {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex: 1;
+    }
+
+    .lesson-num {
+        width: 40px;
+        height: 40px;
+        background: var(--primary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 16px;
+    }
+
+    .lesson-title {
+        font-weight: 700;
+        font-size: 15px;
+        margin-bottom: 4px;
+        color: #1a1a1a;
+    }
+
+    .lesson-meta {
+        font-size: 13px;
+        color: #999;
+    }
+
+    .lesson-icon {
+        font-size: 20px;
+        color: #ccc;
+    }
+
+    .lesson-icon.unlocked {
+        color: var(--primary);
+    }
+
+    .empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: #999;
+    }
+
+    .empty i {
+        font-size: 48px;
+        margin-bottom: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .page {
+            padding: 24px 16px;
+        }
+
+        .hero {
+            padding: 32px 24px;
+        }
+
+        .hero-title {
+            font-size: 32px;
+        }
+
+        .hero-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .card {
+            padding: 24px 20px;
+        }
+
+        .learn-grid,
+        .features {
+            grid-template-columns: 1fr;
+        }
+
+        .teacher {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="page">
+    <div class="breadcrumb">
+        <a href="{% url 'student:home' %}">Bosh sahifa</a> /
+        <a href="{% url 'student:courses' %}">Kurslar</a> /
+        {{ course.title }}
+    </div>
+
+    <div class="hero">
+        <h1 class="hero-title">{{ course.title }}</h1>
+
+        <div class="hero-meta">
+            <div class="meta-item">{{ course.category.name|default:"Kurs" }}</div>
+            <div class="meta-item">{{ course.get_level_display|default:"Daraja" }}</div>
+            {% if course.language %}
+            <div class="meta-item">{{ course.language }}</div>
+            {% endif %}
+        </div>
+
+        <div class="hero-stats">
+            <div class="stat">
+                <span class="stat-num">{{ students_count|default:0 }}</span>
+                <span class="stat-label">Talabalar</span>
+            </div>
+            <div class="stat">
+                <span class="stat-num">{{ lessons_count|default:0 }}</span>
+                <span class="stat-label">Darslar</span>
+            </div>
+            <div class="stat">
+                <span class="stat-num">⭐ {{ course.rating|floatformat:1|default:0 }}</span>
+                <span class="stat-label">Reyting</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        {% if course.background_image %}
+        <div class="course-image">
+            <img src="{{ course.background_image.url }}" alt="{{ course.title }}">
+        </div>
+        {% endif %}
+
+        <div class="card enroll-card">
+            <div class="price-box">
+                {% if course.price > 0 %}
+                <div class="price">{{ course.price|floatformat:0 }} so'm</div>
+                <div class="price-label">Kurs narxi</div>
+                {% else %}
+                <div class="price">Bepul</div>
+                <div class="price-label">Xoziroq boshlang!</div>
+                {% endif %}
+            </div>
+
+            {% if is_enrolled %}
+            <button class="btn btn-disabled" disabled>✓ Yozilgansiz</button>
+            {% if lessons %}
+            <a href="{% url 'student:lesson_detail' lessons.0.id %}" class="btn btn-secondary">
+                Darsni Boshlash
+            </a>
+            {% endif %}
+            {% else %}
+            <form method="post" action="{% url 'student:course_enroll' course.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn">Kursga Yozilish</button>
+            </form>
+            {% endif %}
+
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-infinity"></i>
+                    Cheksiz kirish
+                </div>
+                <div class="feature">
+                    <i class="fas fa-mobile-alt"></i>
+                    Mobil va desktop
+                </div>
+                <div class="feature">
+                    <i class="fas fa-certificate"></i>
+                    Sertifikat
+                </div>
+                <div class="feature">
+                    <i class="fas fa-headset"></i>
+                    Qo'llab-quvvatlash
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Kurs Haqida</h2>
+            <p class="desc">
+                {{ course.description|default:"Bu kurs orqali siz professional bilim va ko'nikmalarga ega bo'lasiz." }}
+            </p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Nimalarni O'rganasiz</h2>
+            <div class="learn-grid">
+                <div class="learn-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Nazariy bilimlar</span>
+                </div>
+                <div class="learn-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Amaliy mashg'ulotlar</span>
+                </div>
+                <div class="learn-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Real loyihalar</span>
+                </div>
+                <div class="learn-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Sertifikat</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">O'qituvchi</h2>
+            <div class="teacher">
+                <div class="teacher-avatar">
+                    {{ course.teacher.first_name.0|upper }}{{ course.teacher.last_name.0|upper|default:'' }}
+                </div>
+                <div style="flex: 1;">
+                    <div class="teacher-name">{{ course.teacher.get_full_name }}</div>
+                    <div class="teacher-meta">
+                        {{ course.teacher.specialization|default:"O'qituvchi" }} •
+                        ⭐ {{ course.teacher.rating|floatformat:1|default:0 }}
+                    </div>
+                    {% if course.teacher.bio %}
+                    <p class="teacher-bio">{{ course.teacher.bio }}</p>
+                    {% endif %}
+                    <a href="{% url 'student:teacher_detail' course.teacher.id %}" class="btn-teacher">
+                        Profil
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Darslar ({{ lessons_count|default:0 }})</h2>
+            {% if lessons %}
+            <div class="lessons">
+                {% for lesson in lessons %}
+                <div class="lesson">
+                    <div class="lesson-main">
+                        <div class="lesson-num">{{ forloop.counter }}</div>
+                        <div>
+                            <div class="lesson-title"><a href="{% url 'student:lesson_detail' lesson.id %}" style="text-decoration: none; color: #1a1a1a;">{{ lesson.title }}</a></div>
+                            <div class="lesson-meta">
+                                {% if lesson.video_url %}Video{% else %}Matn{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% if is_enrolled %}
+                    <i class="fas fa-play-circle lesson-icon unlocked"></i>
+                    {% else %}
+                    <i class="fas fa-lock lesson-icon"></i>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty">
+                <i class="fas fa-book-open"></i>
+                <p>Darslar hali yuklanmagan</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

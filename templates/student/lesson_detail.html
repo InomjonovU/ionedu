@@ -1,0 +1,785 @@
+{% extends 'student/base.html' %}
+
+{% block title %}{{ lesson.title }} - IonEdu{% endblock %}
+
+{% block content %}
+<style>
+    .page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 24px;
+    }
+
+    /* Top Bar */
+    .top-bar {
+        background: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .breadcrumb {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    .btn-back {
+        padding: 10px 20px;
+        background: var(--primary);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    /* Video */
+    .video-section {
+        background: #000;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+
+    .video-player {
+        width: 100%;
+        aspect-ratio: 16/9;
+    }
+
+    .video-player video {
+        width: 100%;
+        height: 100%;
+    }
+
+    .video-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        min-height: 400px;
+    }
+
+    .video-placeholder i {
+        font-size: 60px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    /* Content Grid */
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 24px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        margin-bottom: 24px;
+    }
+
+    .card-title {
+        font-size: 24px;
+        font-weight: 800;
+        margin-bottom: 16px;
+        color: #1a1a1a;
+    }
+
+    /* Lesson Info */
+    .lesson-meta {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .meta-item i {
+        color: var(--primary);
+    }
+
+    /* Reactions */
+    .reactions {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .reaction-btn {
+        padding: 10px 20px;
+        background: #f0f0f0;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .reaction-btn:hover {
+        border-color: var(--primary);
+    }
+
+    .reaction-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .reaction-btn.dislike.active {
+        background: #ef4444;
+        border-color: #ef4444;
+    }
+
+    /* Content */
+    .lesson-content {
+        font-size: 15px;
+        line-height: 1.8;
+        color: #666;
+        margin-bottom: 24px;
+    }
+
+    /* Test Alert */
+    .test-alert {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .test-alert i {
+        font-size: 32px;
+    }
+
+    .test-alert-text h3 {
+        font-size: 18px;
+        font-weight: 800;
+        margin-bottom: 6px;
+    }
+
+    .test-alert-text p {
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    /* Test Card */
+    .test-card {
+        border: 3px solid #fbbf24;
+    }
+
+    .test-info {
+        background: #fffbeb;
+        padding: 16px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .test-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .test-stat {
+        text-align: center;
+        padding: 12px;
+        background: #f0f0f0;
+        border-radius: 10px;
+    }
+
+    .test-stat-value {
+        font-size: 24px;
+        font-weight: 900;
+        color: var(--primary);
+        margin-bottom: 4px;
+    }
+
+    .test-stat-label {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .btn-start-test {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    /* Test Result */
+    .test-result {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .result-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+    }
+
+    .result-score {
+        font-size: 48px;
+        font-weight: 900;
+        margin-bottom: 12px;
+    }
+
+    .result-stars {
+        font-size: 36px;
+        color: #fbbf24;
+        margin-bottom: 16px;
+    }
+
+    .result-message {
+        font-size: 18px;
+        color: #666;
+        margin-bottom: 24px;
+    }
+
+    .result-details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .result-detail {
+        padding: 16px;
+        background: #f0f0f0;
+        border-radius: 10px;
+    }
+
+    .result-detail-value {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--primary);
+    }
+
+    .result-detail-label {
+        font-size: 12px;
+        color: #666;
+    }
+
+    /* Actions */
+    .actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+    }
+
+    .btn-disabled {
+        background: #e0e0e0;
+        color: #999;
+        cursor: not-allowed;
+    }
+
+    .btn-next {
+        background: #3b82f6;
+        color: white;
+    }
+
+    /* Comments */
+    .comment-form textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        font-family: inherit;
+    }
+
+    .comment-form textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .btn-submit-comment {
+        padding: 10px 20px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .comment-item {
+        padding: 16px;
+        background: #fafafa;
+        border-radius: 10px;
+        margin-bottom: 12px;
+    }
+
+    .comment-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+
+    .comment-avatar {
+        width: 36px;
+        height: 36px;
+        background: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .comment-author {
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .comment-date {
+        font-size: 12px;
+        color: #999;
+    }
+
+    .comment-text {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+    }
+
+    /* Sidebar */
+    .course-info {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        color: white;
+        padding: 24px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+    }
+
+    .course-title-text {
+        font-size: 18px;
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    .course-teacher {
+        font-size: 14px;
+        opacity: 0.9;
+        margin-bottom: 16px;
+    }
+
+    .course-progress {
+        margin-bottom: 16px;
+    }
+
+    .progress-text {
+        font-size: 12px;
+        margin-bottom: 8px;
+        opacity: 0.9;
+    }
+
+    .progress-bar {
+        height: 6px;
+        background: rgba(255,255,255,0.3);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: white;
+    }
+
+    .btn-back-course {
+        width: 100%;
+        padding: 12px;
+        background: white;
+        color: #8b5cf6;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 700;
+        display: block;
+        text-align: center;
+    }
+
+    /* Lessons List */
+    .lessons-list {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .lessons-title {
+        font-size: 16px;
+        font-weight: 800;
+        margin-bottom: 16px;
+    }
+
+    .lesson-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: #fafafa;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        text-decoration: none;
+        color: inherit;
+        border: 2px solid transparent;
+    }
+
+    .lesson-item:hover {
+        border-color: var(--primary);
+    }
+
+    .lesson-item.active {
+        background: #e6f7f1;
+        border-color: var(--primary);
+    }
+
+    .lesson-num {
+        width: 32px;
+        height: 32px;
+        background: #ddd;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .lesson-item.active .lesson-num {
+        background: var(--primary);
+        color: white;
+    }
+
+    .lesson-item-title {
+        flex: 1;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .lesson-status {
+        color: #999;
+    }
+
+    .lesson-item.active .lesson-status {
+        color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page {
+            padding: 16px;
+        }
+
+        .top-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .test-stats,
+        .result-details {
+            grid-template-columns: 1fr;
+        }
+
+        .actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="page">
+    <div class="top-bar">
+        <div class="breadcrumb">
+            <a href="{% url 'student:home' %}">Bosh sahifa</a> /
+            <a href="{% url 'student:courses' %}">Kurslar</a> /
+            <a href="{% url 'student:course_detail' course.id %}">{{ course.title }}</a> /
+            {{ lesson.title }}
+        </div>
+        <a href="{% url 'student:course_detail' course.id %}" class="btn-back">
+            Kursga qaytish
+        </a>
+    </div>
+
+    <div class="video-section">
+        <div class="video-player">
+            {% if lesson.video_url %}
+            <video controls controlsList="nodownload">
+                <source src="{{ lesson.video_url }}" type="video/mp4">
+            </video>
+            {% else %}
+            <div class="video-placeholder">
+                <i class="fas fa-video"></i>
+                <p>Video hali yuklanmagan</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <div>
+            <div class="card">
+                <h1 class="card-title">{{ lesson.title }}</h1>
+
+                <div class="lesson-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-book"></i>
+                        Dars {{ lesson.order }}
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-calendar"></i>
+                        {{ lesson.created_at|date:"d.m.Y" }}
+                    </div>
+                </div>
+
+                <div class="reactions">
+                    <form method="post" action="{% url 'student:lesson_like' lesson.id %}" style="display:inline">
+                        {% csrf_token %}
+                        <button type="submit" class="reaction-btn {% if user_reaction == 'like' %}active{% endif %}">
+                            👍 {{ likes_count }}
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'student:lesson_dislike' lesson.id %}" style="display:inline">
+                        {% csrf_token %}
+                        <button type="submit" class="reaction-btn dislike {% if user_reaction == 'dislike' %}active{% endif %}">
+                            👎 {{ dislikes_count }}
+                        </button>
+                    </form>
+                </div>
+
+                {% if lesson.content %}
+                <div class="lesson-content">
+                    {{ lesson.content|linebreaks }}
+                </div>
+                {% endif %}
+
+                <div class="actions">
+                    <button class="btn btn-disabled" disabled>
+                        ✓ Ko'rildi
+                    </button>
+
+                    {% if next_lesson %}
+                    <a href="{% url 'student:lesson_detail' next_lesson.id %}" class="btn btn-next">
+                        Keyingi dars →
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Test Section -->
+            {% if is_last_lesson and course_test %}
+                {% if test_result %}
+                    <!-- Test Result -->
+                    <div class="card test-card">
+                        <div class="test-result">
+                            <div class="result-icon">
+                                {% if test_result.score >= 90 %}🏆
+                                {% elif test_result.score >= 70 %}🌟
+                                {% elif test_result.score >= 50 %}✅
+                                {% else %}❌
+                                {% endif %}
+                            </div>
+                            <div class="result-score">{{ test_result.score }}%</div>
+                            <div class="result-stars">
+                                {% if test_result.score >= 90 %}⭐⭐⭐⭐⭐
+                                {% elif test_result.score >= 80 %}⭐⭐⭐⭐
+                                {% elif test_result.score >= 70 %}⭐⭐⭐
+                                {% elif test_result.score >= 60 %}⭐⭐
+                                {% elif test_result.score >= 50 %}⭐
+                                {% endif %}
+                            </div>
+                            <div class="result-message">
+                                {% if test_result.score >= 90 %}A'lo! Mukammal natija!
+                                {% elif test_result.score >= 70 %}Yaxshi! Muvaffaqiyatli!
+                                {% elif test_result.score >= 50 %}O'rtacha. Test'dan o'tdingiz.
+                                {% else %}Yomon. Qayta urinib ko'ring.
+                                {% endif %}
+                            </div>
+                            <div class="result-details">
+                                <div class="result-detail">
+                                    <div class="result-detail-value">{{ test_result.correct_answers }}</div>
+                                    <div class="result-detail-label">To'g'ri</div>
+                                </div>
+                                <div class="result-detail">
+                                    <div class="result-detail-value">{{ test_result.wrong_answers }}</div>
+                                    <div class="result-detail-label">Xato</div>
+                                </div>
+                                <div class="result-detail">
+                                    <div class="result-detail-value">{{ test_result.total_questions }}</div>
+                                    <div class="result-detail-label">Jami</div>
+                                </div>
+                            </div>
+                            <a href="{% url 'student:course_detail' course.id %}" class="btn btn-primary">
+                                Kursga qaytish
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Test Available -->
+                    <div class="test-alert">
+                        <i class="fas fa-trophy"></i>
+                        <div class="test-alert-text">
+                            <h3>Kurs testi!</h3>
+                            <p>Testni topshiring va yulduzlar yutib oling!</p>
+                        </div>
+                    </div>
+
+                    <div class="card test-card">
+                        <h2 class="card-title">📝 {{ course_test.title }}</h2>
+
+                        <div class="test-info">
+                            <p>{{ course_test.description|default:"Test topshiring va bilimingizni tekshiring" }}</p>
+                        </div>
+
+                        <div class="test-stats">
+                            <div class="test-stat">
+                                <div class="test-stat-value">{{ course_test.questions.count }}</div>
+                                <div class="test-stat-label">Savollar</div>
+                            </div>
+                            <div class="test-stat">
+                                <div class="test-stat-value">{{ course_test.time_limit_minutes|default:30 }}</div>
+                                <div class="test-stat-label">Daqiqa</div>
+                            </div>
+                            <div class="test-stat">
+                                <div class="test-stat-value">{{ course_test.passing_score|floatformat:0 }}%</div>
+                                <div class="test-stat-label">O'tish</div>
+                            </div>
+                        </div>
+
+                        <form method="post" action="{% url 'student:start_test' course_test.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-start-test">
+                                <i class="fas fa-play"></i>
+                                Testni boshlash
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Comments -->
+            <div class="card">
+                <h2 class="card-title">Izohlar ({{ comments.count }})</h2>
+
+                <form method="post" action="{% url 'student:lesson_comment' lesson.id %}" class="comment-form">
+                    {% csrf_token %}
+                    <textarea name="content" placeholder="Izohingizni yozing..." required></textarea>
+                    <button type="submit" class="btn-submit-comment">Yuborish</button>
+                </form>
+
+                {% for comment in comments %}
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <div class="comment-avatar">
+                            {{ comment.user.first_name.0|upper|default:'U' }}
+                        </div>
+                        <div>
+                            <div class="comment-author">{{ comment.user.get_full_name }}</div>
+                            <div class="comment-date">{{ comment.created_at|date:"d.m.Y H:i" }}</div>
+                        </div>
+                    </div>
+                    <p class="comment-text">{{ comment.content }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <aside>
+            <div class="course-info">
+                <h3 class="course-title-text">{{ course.title }}</h3>
+                <div class="course-teacher">
+                    👨‍🏫 {{ course.teacher.get_full_name }}
+                </div>
+                <div class="course-progress">
+                    <div class="progress-text">Progress: {{ course_progress }}%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ course_progress }}%"></div>
+                    </div>
+                </div>
+                <a href="{% url 'student:course_detail' course.id %}" class="btn-back-course">
+                    Kursga qaytish
+                </a>
+            </div>
+
+            <div class="lessons-list">
+                <h3 class="lessons-title">Darslar ({{ all_lessons.count }})</h3>
+                {% for nav_lesson in all_lessons %}
+                <a href="{% url 'student:lesson_detail' nav_lesson.id %}"
+                   class="lesson-item {% if nav_lesson.id == lesson.id %}active{% endif %}">
+                    <div class="lesson-num">{{ nav_lesson.order }}</div>
+                    <div class="lesson-item-title">{{ nav_lesson.title }}</div>
+                    {% if nav_lesson.id == lesson.id %}
+                    <i class="fas fa-play-circle lesson-status"></i>
+                    {% else %}
+                    <i class="fas fa-circle lesson-status"></i>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+        </aside>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,470 @@
+{% extends 'teacher/base.html' %}
+
+{% block page_title %}Kurslar{% endblock %}
+{% block page_subtitle %}Barcha kurslaringizni boshqaring{% endblock %}
+
+{% block content %}
+<style>
+    .page-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .filters {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        flex: 1;
+    }
+
+    .filter-btn {
+        padding: 0.625rem 1.25rem;
+        border: 2px solid #e2e8f0;
+        background: white;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+        border-color: #26CCC2;
+        color: #26CCC2;
+    }
+
+    .filter-btn.active {
+        background: linear-gradient(135deg, #26CCC2 0%, #22b3aa 100%);
+        border-color: #26CCC2;
+        color: white;
+    }
+
+    .search-box {
+        position: relative;
+        flex: 1;
+        max-width: 320px;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 0.625rem 1rem 0.625rem 2.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: #26CCC2;
+    }
+
+    .search-box svg {
+        position: absolute;
+        left: 0.875rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        color: #94a3b8;
+    }
+
+    .add-course-btn {
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, #26CCC2 0%, #22b3aa 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(38, 204, 194, 0.3);
+    }
+
+    .add-course-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(38, 204, 194, 0.4);
+    }
+
+    .add-course-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table thead {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .data-table th {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .data-table td {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        color: #1a202c;
+        font-size: 0.875rem;
+    }
+
+    .data-table tbody tr {
+        transition: background 0.2s;
+    }
+
+    .data-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .course-cell {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .course-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #26CCC2 0%, #22b3aa 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.125rem;
+        flex-shrink: 0;
+    }
+
+    .course-info {
+        min-width: 0;
+    }
+
+    .course-title {
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+
+    .course-subject {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+
+    .status-badge {
+        padding: 0.375rem 0.875rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .status-badge.open {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-badge.closed {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 8px;
+        background: #f1f5f9;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+        background: #26CCC2;
+    }
+
+    .action-btn:hover svg {
+        color: white;
+    }
+
+    .action-btn svg {
+        width: 16px;
+        height: 16px;
+        color: #64748b;
+        transition: color 0.2s;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-state svg {
+        width: 80px;
+        height: 80px;
+        color: #cbd5e1;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1.25rem;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .page-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filters {
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .search-box {
+            max-width: 100%;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            min-width: 800px;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title">Kurslar</h1>
+    <p class="page-subtitle">Barcha kurslaringizni boshqaring</p>
+</div>
+
+<!-- Page Actions -->
+<div class="page-actions">
+    <div class="filters">
+        <button class="filter-btn active" data-filter="all">
+            Barchasi
+        </button>
+        <button class="filter-btn" data-filter="open">
+            Ochiq
+        </button>
+        <button class="filter-btn" data-filter="closed">
+            Yopiq
+        </button>
+    </div>
+
+    <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Kurs qidirish...">
+    </div>
+
+    <button class="add-course-btn" onclick="window.location.href='{% url 'teacher:create_course' %}'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 4v16m8-8H4"/>
+        </svg>
+        Yangi Kurs
+    </button>
+</div>
+
+<!-- Table Container -->
+<div class="table-container">
+    {% if courses %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Kurs</th>
+                <th>Toifa</th>
+                <th>O'quvchilar</th>
+                <th>Darslar</th>
+                <th>Status</th>
+                <th>Yaratilgan</th>
+                <th>Amallar</th>
+            </tr>
+        </thead>
+        <tbody id="courseTableBody">
+            {% for course in courses %}
+            <tr data-type="{{ course.type }}">
+                <td>
+                    <div class="course-cell">
+                        <div class="course-icon">
+                            {{ course.title.0 }}
+                        </div>
+                        <div class="course-info">
+                            <div class="course-title">{{ course.title }}</div>
+                            {% if course.subject %}
+                            <div class="course-subject">{{ course.subject }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    {% if course.category %}
+                        {{ course.category.name }}
+                    {% else %}
+                        <span style="color: #94a3b8;">—</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <strong>{{ course.students.count }}</strong>
+                </td>
+                <td>
+                    <strong>{{ course.lessons.count }}</strong>
+                </td>
+                <td>
+                    <span class="status-badge {{ course.type }}">
+                        {% if course.type == 'open' %}Ochiq{% else %}Yopiq{% endif %}
+                    </span>
+                </td>
+                <td>
+                    {{ course.created_at|date:"d.m.Y" }}
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="window.location.href='{% url 'teacher:course_detail' course.id %}'" title="Ko'rish">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                        <button class="action-btn" onclick="window.location.href='{% url 'teacher:edit_course' course.id %}'" title="Tahrirlash">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </button>
+                        <button class="action-btn" onclick="deleteCourse({{ course.id }}, '{{ course.title }}')" title="O'chirish">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+        </svg>
+        <h3>Hozircha kurslar yo'q</h3>
+        <p>Birinchi kursingizni yarating va o'qitishni boshlang!</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Filter functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const tableRows = document.querySelectorAll('#courseTableBody tr');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            const filter = button.dataset.filter;
+
+            // Filter rows
+            tableRows.forEach(row => {
+                if (filter === 'all') {
+                    row.style.display = '';
+                } else {
+                    const rowType = row.dataset.type;
+                    row.style.display = rowType === filter ? '' : 'none';
+                }
+            });
+        });
+    });
+
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+
+        tableRows.forEach(row => {
+            const courseTitle = row.querySelector('.course-title').textContent.toLowerCase();
+            const courseSubject = row.querySelector('.course-subject')?.textContent.toLowerCase() || '';
+
+            if (courseTitle.includes(searchTerm) || courseSubject.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Delete course function
+    function deleteCourse(courseId, courseTitle) {
+        if (confirm(`"${courseTitle}" kursini o'chirishni xohlaysizmi?`)) {
+            // Send delete request
+            fetch(`{% url 'teacher:delete_course' 0 %}`.replace('0', courseId), {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Reload page or remove row
+                    location.reload();
+                } else {
+                    alert('Xatolik yuz berdi. Qayta urinib ko\'ring.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Xatolik yuz berdi. Qayta urinib ko\'ring.');
+            });
+        }
+    }
+</script>
+
+{% endblock %}
